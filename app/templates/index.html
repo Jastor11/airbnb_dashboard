@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>AirBnB Data Analysis</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+        <link 
+            rel="stylesheet" 
+            href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""
+        />        
+    </head>
+    <body>
+        <h1>AirBnB Data Analysis</h1>
+
+        <div>
+            <h3>Price Percentiles Per Borough</h3>
+            {% for row in obj_1 %}
+                {{ row|safe }}
+            {% endfor %}
+        </div>
+        
+        <div>
+            <h3>Listings and Average Reviews for Top Ten Names</h3>
+            {% for row in obj_3 %}
+                {{ row|safe }}
+            {% endfor %}
+        </div>  
+        
+        <div class="price__hist">
+            <img src="data:image/png;base64, {{ plot_url }}">
+        </div>   
+        
+        <div class="neighbourhood-map">
+            <p class="neighbourhood-select">
+                <select id="neighbourhood-select">
+                    {% for n in neighbourhood_options %}
+                        {% if n == selectedNeighbourhood %}
+                            <option selected value="{{ n }}">{{ n }}</option>
+                        {% else %}
+                            <option value="{{ n }}">{{ n }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button onclick={selectNeighbourhood()}>SELECT</button>
+            </p>
+            <p>Currently Viewing Listings in {{ currentSelection }}</p>
+            <div id="mapid"></div>
+        </div>
+        
+        <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+           integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+           crossorigin=""></script>        
+        <script type="text/javascript">
+            const selectNeighbourhood = () => {
+                const neighbourhoodSelect = document.querySelector('#neighbourhood-select')
+                window.location.href = `/?neighbourhood=${neighbourhoodSelect.value}`
+            }
+        </script>
+        <script type="text/javascript">
+            const Map = ( jsonString => {
+                // parse the json string
+                const data = JSON.parse(jsonString)
+                const nyc_map = L.map('mapid', { scrollWheelZoom:false })
+                // Data provider
+                const osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                const osmAttrib = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+                // Layer
+                const osmLayer = new L.TileLayer(osmUrl, {
+                    minZoom: 1,
+                    maxZoom: 20,
+                    attribution: osmAttrib
+                })
+                
+                // just make the first item the center
+                const centerLat = data[0]['latitude']
+                const centerLng = data[0]['longitude']
+                
+                const zoom = 14
+                nyc_map.setView(new L.LatLng(centerLat, centerLng), zoom)
+                nyc_map.addLayer(osmLayer)  
+
+                data.forEach( row => {
+                    console.log(row)
+                    const marker = L.marker([row.latitude, row.longitude]).addTo(nyc_map)
+                    const popup_text = `${row['host_name']}<br /> price: $${row.price} a night<br /> total reviews: ${row.number_of_reviews}`
+                    marker.bindPopup(popup_text).openPopup()
+                })
+               
+                window.scrollTo({ top:window.innerHeight*2, behavior: 'smooth' })
+            })({{ mapData|tojson }})
+            
+        </script>
+    </body>
+</html>

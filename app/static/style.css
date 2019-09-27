@@ -1,0 +1,26 @@
+body {
+    background: dodgerblue;
+    color: white;
+    font-family: Courier New;
+    text-align: center;
+}
+
+table {
+    margin: 0 auto;
+}
+
+table, tr, th {
+    color: white;
+    text-align: center;
+}
+
+.price__hist {
+    width: 80%;
+    margin: 50px auto;
+}
+
+#mapid { 
+    height: 400px; 
+    width: 80%;
+    margin: 0 auto;
+}
