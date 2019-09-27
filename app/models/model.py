@@ -16,7 +16,7 @@ class AirbnbData(object):
         }
         df.fillna(na_map, inplace=True)        
         self.df = df
-        
+
     def percentiles_per_borough(self):
         boroughs = ['Brooklyn', 'Manhattan', 'Queens', 'Staten Island', 'Bronx']
         borough_prices = dict({})
@@ -41,11 +41,10 @@ class AirbnbData(object):
         df_price_range = self.df[ (self.df['price'] >= 500) & (self.df['price'] <= 1000) ]
         plt.hist(df_price_range['price'], 
                  bins=30, 
-                 normed=False, 
+                 density=False, 
                  color='teal')
                 #  color='dodgerblue')
         plt.xlabel('Price')
-        # plt.ylabel('Frequency')
         plt.ylabel('Count')
         plt.title('Price Distribution for Listings in the \$500-\$1000 Range')
         plt.savefig(img, format='png')

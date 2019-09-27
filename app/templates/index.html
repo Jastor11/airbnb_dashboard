@@ -57,11 +57,12 @@
         <script type="text/javascript">
             const selectNeighbourhood = () => {
                 const neighbourhoodSelect = document.querySelector('#neighbourhood-select')
-                window.location.href = `/?neighbourhood=${neighbourhoodSelect.value}`
+                window.location.href = `/?neighbourhood=${neighbourhoodSelect.value}&queried=${true}`
             }
         </script>
         <script type="text/javascript">
-            const Map = ( jsonString => {
+            const Map = ((jsonString, queried) => {
+                // console.log(queried)
                 // parse the json string
                 const data = JSON.parse(jsonString)
                 const nyc_map = L.map('mapid', { scrollWheelZoom:false })
@@ -84,14 +85,17 @@
                 nyc_map.addLayer(osmLayer)  
 
                 data.forEach( row => {
-                    console.log(row)
+                    // console.log(row)
                     const marker = L.marker([row.latitude, row.longitude]).addTo(nyc_map)
                     const popup_text = `${row['host_name']}<br /> price: $${row.price} a night<br /> total reviews: ${row.number_of_reviews}`
                     marker.bindPopup(popup_text).openPopup()
                 })
                
-                window.scrollTo({ top:document.body.scrollHeight, behavior: 'smooth' })
-            })({{ mapData|tojson }})
+                // python bool needs to be converted to string
+                if (queried !== 'False') {
+                    window.scrollTo({ top:document.body.scrollHeight, behavior: 'smooth' })
+                }
+            })({{ mapData|tojson }}, "{{ queried }}")
             
         </script>
     </body>

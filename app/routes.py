@@ -18,6 +18,7 @@ def index():
     plot_url = airbnb.price_range_hist()
     
     neighbourhood = request.args.get('neighbourhood', default='Williamsburg', type=str)
+    queried = request.args.get('queried', default=False, type=bool)
     mapData = airbnb.get_map_data(neighbourhood=neighbourhood).to_json(orient='records')
     
     neighbourhood_options = airbnb.get_neighbourhood_options()
@@ -28,4 +29,5 @@ def index():
                             plot_url=plot_url,
                             mapData=mapData,
                             neighbourhood_options=neighbourhood_options,
-                            currentSelection=neighbourhood)
+                            currentSelection=neighbourhood,
+                            queried=queried)
