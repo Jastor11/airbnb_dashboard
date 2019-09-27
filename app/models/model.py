@@ -39,7 +39,11 @@ class AirbnbData(object):
     def price_range_hist(self):
         img = BytesIO()
         df_price_range = self.df[ (self.df['price'] >= 500) & (self.df['price'] <= 1000) ]
-        plt.hist(df_price_range['price'], bins=30, normed=False, color='dodgerblue')
+        plt.hist(df_price_range['price'], 
+                 bins=30, 
+                 normed=False, 
+                 color='teal')
+                #  color='dodgerblue')
         plt.xlabel('Price')
         # plt.ylabel('Frequency')
         plt.ylabel('Count')
